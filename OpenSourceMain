@@ -31,16 +31,18 @@ local Misc = Window:MakeTab({
 function closestHoop()
     local dist,hoop = math.huge
     
-    for i,v in pairs(workspace:GetDescendants()) do
-        if v.Name == "rim" and v.ClassName == "MeshPart" then
-                local magnitude = (char.HumanoidRootPart.Position - v.Position).Magnitude
-                if magnitude < dist then
-                    dist = magnitude
-                    hoop = v
+    for i,v in pairs(game:GetService("Workspace").Courts:GetChildren()) do
+        if v:IsA('Model') and v:FindFirstChild('Basketball Hoop') then
+
+                local rim =  v["Basketball Hoop"].rim
+                     _G.magnitude = (char.HumanoidRootPart.Position - rim.Position).Magnitude
+                    if _G.magnitude < dist then
+                        dist = _G.magnitude
+                        hoop = v["Basketball Hoop"].rim
             end
         end
+        return hoop
     end
-    return hoop
 end
 
 
@@ -53,7 +55,7 @@ Main:AddToggle({Name = "Aimbot",Callback = function(value)
     
     if key.UserInputType == Enum.UserInputType.MouseButton1 then
             local  magnitude = (char.HumanoidRootPart.Position - closestHoop().Position).Magnitude / (game.Players.LocalPlayer.Power.Value / 22)
-            if _G.toggle then
+            if _G.toggle and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") then
                  local plusvector = closestHoop().Position.X / Vector3.new(-100,0,0)
                  cam.CFrame = CFrame.new(cam.CFrame.Position, closestHoop().Position + (Vector3.new(0,magnitude,0)))
             end
@@ -79,7 +81,7 @@ Main:AddToggle({Name = "Aim Assist",Callback = function(value)
     
 end})
 spawn(function()
-while true do wait(0.35)
+while true do wait(0.05)
         if assist and closestHoop() then
             if  (char.HumanoidRootPart.Position - closestHoop().Position).Magnitude <= 98 then
             Square.Visible = true
@@ -111,7 +113,7 @@ spawn(function()
                 end
                 changed = true
                 assistlabel:Change("Recommended Power: "..tostring(round(magnitude)))
-                task.wait(0.7)
+                task.wait(0.05)
             end
        end
     if powerassist == false and changed then
@@ -134,7 +136,7 @@ Main:AddToggle({Name = "Auto Power",Callback = function(value)
                 end
                 changed = true
                 game.Players.LocalPlayer.Power.Value = round(magnitude)
-                task.wait(0.7)
+                task.wait(0.05)
                 end
            end
         end
